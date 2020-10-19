@@ -6,7 +6,7 @@
 @Author: li xuefeng
 @Date: 2020-07-25 01:06:38
 
-LastEditTime: 2020-10-19 10:18:37
+LastEditTime: 2020-10-19 16:32:45
 LastEditors: lixf
 @Description: 
 FilePath: \wsl_author\crawler.py
@@ -22,6 +22,7 @@ import redis
 import pymysql
 import sys, os, platform
 from datetime import datetime, tzinfo, timedelta
+import random
 
 
 class UTC(tzinfo):
@@ -124,6 +125,7 @@ while True:
                 # author_ori = 'Ian Sherr'
                 # origin_index = '135984'
                 print('current url is ', single_url, '\n', 'loading')
+                time.sleep(random.random())
                 driver.get(single_url)
                 print(datetime.now(UTC(8)))
                 # WebDriverWait(driver, 10).until(
@@ -152,7 +154,7 @@ while True:
                     if i != 0:
                         # continue
                         # 有问题，待修复
-                        time.sleep(5)
+                        time.sleep(random.randint(3, 10))
                         driver.find_elements_by_xpath(
                             '//li[@class="next-page"]')[0].click()
                         # time.sleep(3)
@@ -165,6 +167,8 @@ while True:
                         if cur_res != len_res:
                             r.radd('authors_list_v1', '\t'.join(line))
                             print("find block,push key back to db")
+                            r.radd('half_fail_authors',
+                                   '\t'.join([author_ori, str(i)]))
                             continue
                         news = driver.find_elements_by_css_selector(
                             '.headline-container')

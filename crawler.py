@@ -6,7 +6,7 @@
 @Author: li xuefeng
 @Date: 2020-07-25 01:06:38
 
-LastEditTime: 2020-10-19 07:16:35
+LastEditTime: 2020-10-19 10:18:37
 LastEditors: lixf
 @Description: 
 FilePath: \wsl_author\crawler.py
@@ -115,7 +115,7 @@ while True:
             # start_date += end_date[4:]
             author_ori = line[0]
             try:
-                single_url = "https://www.wsj.com/search/term.html?min-date=2000/01/01&max-date=2020/10/19&isAdvanced=true&daysback=4y&byline={author}&andor=AND&sort=date-desc&source=wsjarticle,wsjblogs,wsjvideo,interactivemedia,sitesearch,press,newswire,wsjpro".format(
+                single_url = "https://www.wsj.com/search/term.html?min-date=2010/01/01&max-date=2020/10/19&isAdvanced=true&daysback=4y&byline={author}&andor=AND&sort=date-desc&source=wsjarticle,wsjblogs,wsjvideo,interactivemedia,sitesearch,press,newswire,wsjpro".format(
                     author=author_ori)
                 # single_url = 'https://www.wsj.com/search/term.html?KEYWORDS=3M&min-date=2015/04/26&max-date=2016/04/26&isAdvanced=true&daysback=90d&byline=Bob%20Tita&andor=AND&sort=date-desc&source=wsjarticle'
                 # name = 'Activision'

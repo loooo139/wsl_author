@@ -6,7 +6,7 @@
 @Author: li xuefeng
 @Date: 2020-07-25 01:06:38
 
-LastEditTime: 2020-10-19 16:32:45
+LastEditTime: 2020-10-19 16:38:23
 LastEditors: lixf
 @Description: 
 FilePath: \wsl_author\crawler.py
@@ -207,7 +207,7 @@ while True:
                                  abstract, news_url))
                             res.write(single_res + '\n')
                             print(single_res)
-                            if r.sadd('news_author_v1', single_res) == 0:
+                            if r.sadd('news_author_v2', single_res) == 0:
                                 print('duplicate news')
                                 continue
                             try:

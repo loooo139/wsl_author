@@ -6,27 +6,31 @@
 @Author: li xuefeng
 @Date: 2020-07-25 01:06:38
 
-LastEditTime: 2020-10-19 16:38:23
+LastEditTime: 2020-10-23 18:45:22
 LastEditors: lixf
 @Description: 
 FilePath: \wsl_author\crawler.py
 @越码越快乐
 '''
 from datetime import datetime
-import threading, queue
+import threading
+import queue
 from selenium import webdriver
 from datetime import date
 from datetime import timedelta
 import time
 import redis
 import pymysql
-import sys, os, platform
+import sys
+import os
+import platform
 from datetime import datetime, tzinfo, timedelta
 import random
 
 
 class UTC(tzinfo):
     """UTC"""
+
     def __init__(self, offset=0):
         self._offset = offset
 
@@ -87,7 +91,7 @@ r = redis.StrictRedis(host=redis_url,
                       db=0)
 res = open('./dis_res.csv', 'a', encoding='utf8', buffering=1)
 
-#len_res=0
+# len_res=0
 full_res = 0
 driver.implicitly_wait(10)
 # driver.set_page_load_timeout(10)
@@ -97,16 +101,16 @@ mysql = pymysql.connect(host=mysql_url,
                         connect_timeout=200,
                         db='crawler')
 cursor = mysql.cursor()
-sql = 'insert into author_news_v1(author,news_tag,news_title,news_authors,news_time,news_summary,news_url) values("{}","{}","{}","{}","{}","{}","{}")'
+sql = 'insert into author_news_v2(key_word,news_tag,news_title,news_authors,news_time,news_summary,news_url,company_id) values("{}","{}","{}","{}","{}","{}","{}","{}")'
 fail_data = open('./other.csv', 'a', encoding='utf8')
 while True:
     try:
-        while r.scard('authors_list_v1') != 0:
+        while r.scard('companys_list_v1') != 0:
             #    time.sleep(5)
             print(datetime.now(UTC(8)))
             print('remain task')
-            print(r.scard('authors_list_v1'))
-            line = r.spop('authors_list_v1').decode('utf8').split('\t')
+            print(r.scard('companys_list_v1'))
+            line = r.spop('companys_list_v1').decode('utf8').split('\t')
             #    r.lpop('urls')
             # name, start_date, end_date = line[0], line[1], line[2]
             # origin_index, name, start_date, author_ori = line[0], line[
@@ -114,10 +118,12 @@ while True:
             # end_date = start_date.split()[0]
             # start_date = str(int(end_date.split('/')[0]) - 1)
             # start_date += end_date[4:]
-            author_ori = line[0]
+            # author_ori = line[0]
+            company_name = line[0]
+            company_id = line[1]
             try:
-                single_url = "https://www.wsj.com/search/term.html?min-date=2010/01/01&max-date=2020/10/19&isAdvanced=true&daysback=4y&byline={author}&andor=AND&sort=date-desc&source=wsjarticle,wsjblogs,wsjvideo,interactivemedia,sitesearch,press,newswire,wsjpro".format(
-                    author=author_ori)
+                single_url = "https://www.wsj.com/search?query={key}&isToggleOn=true&operator=AND&sort=date-desc&duration=4y&startDate=2001%2F01%2F23&endDate=2020%2F10%2F23&source=wsjie%2Cblog%2Cwsjvideo%2Cinteractivemedia%2Cwsjsitesrch%2Cwsjpro%2Cautowire%2Capfeed".format(
+                    key=company_name)
                 # single_url = 'https://www.wsj.com/search/term.html?KEYWORDS=3M&min-date=2015/04/26&max-date=2016/04/26&isAdvanced=true&daysback=90d&byline=Bob%20Tita&andor=AND&sort=date-desc&source=wsjarticle'
                 # name = 'Activision'
                 # start_date = '2013/01/01'
@@ -165,16 +171,16 @@ while True:
                         print('click next page finish,cur_lenth is %d',
                               cur_res)
                         if cur_res != len_res:
-                            r.radd('authors_list_v1', '\t'.join(line))
+                            r.radd('companys_list_v1', '\t'.join(line))
                             print("find block,push key back to db")
-                            r.radd('half_fail_authors',
-                                   '\t'.join([author_ori, str(i)]))
+                            r.radd('half_fail_company',
+                                   '\t'.join([company_name, str(i)]))
                             continue
                         news = driver.find_elements_by_css_selector(
                             '.headline-container')
                     print("find " + str(len(news)) + " news")
                     if len(news) == 0:
-                        r.sadd('authors_list_v1', '\t'.join(line))
+                        r.sadd('companys_list_v1', '\t'.join(line))
                         print('it seems there is no news ,try it later')
                         print('current url is ', single_url)
                         continue
@@ -203,17 +209,17 @@ while True:
                                 'h3 > a')[0].get_attribute('href')
                             # news_index = origin_index + '-' + author_ori
                             single_res = '\t'.join(
-                                (author_ori, tag, title, author, date,
-                                 abstract, news_url))
+                                (company_name, tag, title, author, date,
+                                 abstract, news_url, company_id))
                             res.write(single_res + '\n')
                             print(single_res)
                             if r.sadd('news_author_v2', single_res) == 0:
                                 print('duplicate news')
                                 continue
                             try:
-                                news_sql = sql.format(author_ori, tag, title,
+                                news_sql = sql.format(company_name, tag, title,
                                                       author, date, abstract,
-                                                      news_url)
+                                                      news_url, company_id)
                                 cursor.execute(news_sql)
                                 mysql.commit()
                                 print('insert to db success')
@@ -233,10 +239,11 @@ while True:
                                 mysql.rollback()
                         except Exception as e:
                             print('exception', e, sys.exc_info())
-                            single_res = '\t'.join([author_ori, i.text])
+                            single_res = '\t'.join([company_name, i.text])
                             fail_data.write(single_res + '\n')
 
-                print('finish one  pages jobs,left is ', r.scard('urls'))
+                print('finish one  jobs,left is ',
+                      r.scard('companys_list_v1'))
 
                 # res.write(i.text)
             except Exception as e:
@@ -248,7 +255,7 @@ while True:
                                       password='6063268abc',
                                       retry_on_timeout=5,
                                       db=0)
-                r.sadd('authors_list_v1', '\t'.join(line))
+                r.sadd('companys_list_v1', '\t'.join(line))
         #  得到网页 html, 还能截图
         print('jobs finish ,queue is empty')
         break

@@ -6,7 +6,7 @@
 @Author: li xuefeng
 @Date: 2020-07-25 01:06:38
 
-LastEditTime: 2020-10-23 18:45:22
+LastEditTime: 2020-10-25 23:15:08
 LastEditors: lixf
 @Description: 
 FilePath: \wsl_author\crawler.py
@@ -67,7 +67,7 @@ options.add_argument('--ignore-certificate-errors')
 options.add_argument('--no-sandbox')
 options.add_argument('--disable-dev-shm-usage')
 # options.add_experimental_option('mobileEmulation', mobileEmulation)
-options.add_argument('--headless')
+# options.add_argument('--headless')
 # 更换头部
 options.add_argument(
     'user-agent="Mozilla/5.0 (iPod; U; CPU iPhone OS 2_1 like Mac OS X; ja-jp) AppleWebKit/525.18.1 (KHTML, like Gecko) Version/3.1.1 Mobile/5F137 Safari/525.20"'
@@ -140,14 +140,14 @@ while True:
                 # time.sleep(3)
                 try:
                     news = driver.find_elements_by_css_selector(
-                        '.headline-container')
+                        'div[class^="WSJTheme--search-result"')
                     if len(news) == 0:
                         print('no news parse')
                         r.sadd('authors_list_v1', '\t'.join(line))
                         continue
                     len_res = int(
                         driver.find_elements_by_css_selector(
-                            'li[class="results-count"]')[0].text.split()[-1])
+                            'span[class="strong"]')[0].text.split()[-1])
                 except IndexError as e:
                     # r.sadd('urls', '\t'.join(line))
                     print('find no news on this page,put it back to db')
@@ -160,14 +160,14 @@ while True:
                     if i != 0:
                         # continue
                         # 有问题，待修复
-                        time.sleep(random.randint(3, 10))
-                        driver.find_elements_by_xpath(
-                            '//li[@class="next-page"]')[0].click()
+                        time.sleep(random.randint(1, 10))
+                        # driver.find_elements_by_css_selector(
+                        #     'a[class~="WSJTheme--next"]')[0].click()
+                        driver.get(single_url+'&page={num}'.format(num=i+1))
                         # time.sleep(3)
                         cur_res = int(
                             driver.find_elements_by_css_selector(
-                                'li[class="results-count"]')[0].text.split()
-                            [-1])
+                                'span[class="strong"]')[0].text.split()[-1])
                         print('click next page finish,cur_lenth is %d',
                               cur_res)
                         if cur_res != len_res:
@@ -177,7 +177,7 @@ while True:
                                    '\t'.join([company_name, str(i)]))
                             continue
                         news = driver.find_elements_by_css_selector(
-                            '.headline-container')
+                            'div[class^="WSJTheme--search-result"')
                     print("find " + str(len(news)) + " news")
                     if len(news) == 0:
                         r.sadd('companys_list_v1', '\t'.join(line))
@@ -193,18 +193,22 @@ while True:
 
                             try:
                                 author = i.find_elements_by_css_selector(
-                                    'li[class="byline"]')[0].text[3:]
+                                    'p[class^="WSJTheme--byline"]')[0].text
                             except:
                                 author = 'null'
-                            tag = i.find_elements_by_css_selector(
-                                'div[class="category"]')[0].text
+                            # tag = i.find_elements_by_css_selector(
+                            #     'div[class="category"]')[0].text
+                            tag = 'null'
                             title = i.find_elements_by_css_selector(
-                                'h3[class="headline"]')[0].text
+                                'h3[class^="WSJTheme--headline"]')[0].text
                             date = i.find_elements_by_css_selector(
-                                'time')[0].text
-                            abstract = i.find_elements_by_css_selector(
-                                'div[class="summary-container"]')[0].text
-                            abstract = abstract.replace('"', '')
+                                'div[class^="WSJTheme--timestamp"')[0].text
+                            try:
+                                abstract = i.find_elements_by_css_selector(
+                                    'p[class^="WSJTheme--summary"]')[0].text
+                                abstract = abstract.replace('"', '')
+                            except:
+                                abstract = 'null'
                             news_url = i.find_elements_by_css_selector(
                                 'h3 > a')[0].get_attribute('href')
                             # news_index = origin_index + '-' + author_ori
@@ -213,7 +217,7 @@ while True:
                                  abstract, news_url, company_id))
                             res.write(single_res + '\n')
                             print(single_res)
-                            if r.sadd('news_author_v2', single_res) == 0:
+                            if r.sadd('news_company_v1', single_res) == 0:
                                 print('duplicate news')
                                 continue
                             try:

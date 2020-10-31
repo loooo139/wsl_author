@@ -1,7 +1,7 @@
 '''
 @Author: li xuefeng
 @Date: 2020-07-28 22:28:02
-LastEditTime: 2020-10-23 18:33:38
+LastEditTime: 2020-10-30 19:23:41
 LastEditors: lixf
 @Description: 
 FilePath: \wsl_author\push_urls.py
@@ -32,6 +32,7 @@ month_dict = {
 }
 # 将刚刚复制的帖在这
 company_list = []
+companyid_set = set()
 with open('./company_all.txt') as f:
     for k, line in enumerate(f):
         if k == 0:
@@ -39,6 +40,7 @@ with open('./company_all.txt') as f:
         line = line.strip()
         tmp = line.split('\t')
         id = tmp[-1]
+        companyid_set.add(id)
         tmp_key = [i + '\t'+id for i in tmp[:3]]
         if len(tmp) != 5:
             print(line)
@@ -74,6 +76,7 @@ r = redis.StrictRedis(host='tencent.latiaohaochi.cn',
                       password='6063268abc',
                       db=0)
 time_null = 0
+print("ai")
 for i, url in enumerate(company_list):
     # if len(url[0]) == 0:
     #     print('null key_word ')

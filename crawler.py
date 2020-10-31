@@ -6,7 +6,7 @@
 @Author: li xuefeng
 @Date: 2020-07-25 01:06:38
 
-LastEditTime: 2020-10-25 23:27:18
+LastEditTime: 2020-10-31 13:23:04
 LastEditors: lixf
 @Description: 
 FilePath: \wsl_author\crawler.py
@@ -143,7 +143,7 @@ while True:
                         'div[class^="WSJTheme--search-result"')
                     if len(news) == 0:
                         print('no news parse')
-                        r.sadd('authors_list_v1', '\t'.join(line))
+                        r.sadd('companys_list_v1', '\t'.join(line))
                         continue
                     len_res = int(
                         driver.find_elements_by_css_selector(
@@ -152,7 +152,7 @@ while True:
                     # r.sadd('urls', '\t'.join(line))
                     print('find no news on this page,put it back to db')
                     print('current url is ', single_url)
-                    r.sadd('authors_list_v1', '\t'.join(line))
+                    r.sadd('companys_list_v1', '\t'.join(line))
                     continue
                 for i in range(int(len_res / 20) + 1):
                     print("full len  page is {0},cur is {1}".format(
@@ -165,9 +165,12 @@ while True:
                         #     'a[class~="WSJTheme--next"]')[0].click()
                         driver.get(single_url+'&page={num}'.format(num=i+1))
                         # time.sleep(3)
-                        cur_res = int(
-                            driver.find_elements_by_css_selector(
-                                'span[class="strong"]')[0].text.split()[-1])
+                        try:
+                            cur_res = int(
+                                driver.find_elements_by_css_selector(
+                                    'span[class="strong"]')[0].text.split()[-1])
+                        except:
+                            cur_res = -1
                         print('click next page finish,cur_lenth is %d',
                               cur_res)
                         if cur_res != len_res:
@@ -175,7 +178,7 @@ while True:
                             print("find block,push key back to db")
                             r.radd('half_fail_company',
                                    '\t'.join([company_name, str(i)]))
-                            continue
+                            break
                         news = driver.find_elements_by_css_selector(
                             'div[class^="WSJTheme--search-result"')
                     print("find " + str(len(news)) + " news")
@@ -183,7 +186,7 @@ while True:
                         r.sadd('companys_list_v1', '\t'.join(line))
                         print('it seems there is no news ,try it later')
                         print('current url is ', single_url)
-                        continue
+                        break
                     for k, i in enumerate(news):
                         print(k + 1)
                         print(datetime.now(UTC(8)))

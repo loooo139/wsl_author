@@ -6,7 +6,7 @@
 @Author: li xuefeng
 @Date: 2020-07-25 01:06:38
 
-LastEditTime: 2020-10-31 13:23:04
+LastEditTime: 2020-10-31 19:54:29
 LastEditors: lixf
 @Description: 
 FilePath: \wsl_author\crawler.py
@@ -79,7 +79,7 @@ else:
     redis_url = 'latiaohaochi.cn'
     mysql_url = 'latiaohaochi.cn'
 redis_url = 'tencent.latiaohaochi.cn'
-mysql_url = 'tencent.latiaohaochi.cn'
+mysql_url = 'ali.latiaohaochi.top'
 # if ping('www.google.com') != 0:
 #     print('using proxy browse the wjs')
 #     # options.add_argument("--proxy-server=socks5://n1.latiaohaochi.top:10808")

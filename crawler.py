@@ -6,7 +6,7 @@
 @Author: li xuefeng
 @Date: 2020-07-25 01:06:38
 
-LastEditTime: 2020-10-31 19:54:29
+LastEditTime: 2020-10-31 20:16:52
 LastEditors: lixf
 @Description: 
 FilePath: \wsl_author\crawler.py
@@ -160,7 +160,7 @@ while True:
                     if i != 0:
                         # continue
                         # 有问题，待修复
-                        time.sleep(random.randint(1, 10))
+                        time.sleep(random.random())
                         # driver.find_elements_by_css_selector(
                         #     'a[class~="WSJTheme--next"]')[0].click()
                         driver.get(single_url+'&page={num}'.format(num=i+1))

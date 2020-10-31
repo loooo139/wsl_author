@@ -6,7 +6,7 @@
 @Author: li xuefeng
 @Date: 2020-07-25 01:06:38
 
-LastEditTime: 2020-10-31 20:16:52
+LastEditTime: 2020-10-31 20:21:49
 LastEditors: lixf
 @Description: 
 FilePath: \wsl_author\crawler.py
@@ -237,7 +237,7 @@ while True:
                                 print(news_sql)
                                 print('insert to db failed')
                                 mysql = pymysql.connect(
-                                    host='tencent.latiaohaochi.cn',
+                                    host=mysql_url,
                                     user='root',
                                     password='6063268abc',
                                     connect_timeout=20,

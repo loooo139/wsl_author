@@ -6,7 +6,7 @@
 @Author: li xuefeng
 @Date: 2020-07-25 01:06:38
 
-LastEditTime: 2020-10-31 20:21:49
+LastEditTime: 2020-11-06 15:42:17
 LastEditors: lixf
 @Description: 
 FilePath: \wsl_author\crawler.py
@@ -204,6 +204,7 @@ while True:
                             tag = 'null'
                             title = i.find_elements_by_css_selector(
                                 'h3[class^="WSJTheme--headline"]')[0].text
+                            title = title.replace('"', '')
                             date = i.find_elements_by_css_selector(
                                 'div[class^="WSJTheme--timestamp"')[0].text
                             try:
@@ -227,6 +228,7 @@ while True:
                                 news_sql = sql.format(company_name, tag, title,
                                                       author, date, abstract,
                                                       news_url, company_id)
+                                news_sql = news_sql.replace('"', '')
                                 cursor.execute(news_sql)
                                 mysql.commit()
                                 print('insert to db success')

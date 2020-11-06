@@ -6,7 +6,7 @@
 @Author: li xuefeng
 @Date: 2020-07-25 01:06:38
 
-LastEditTime: 2020-11-06 15:42:17
+LastEditTime: 2020-11-06 21:15:42
 LastEditors: lixf
 @Description: 
 FilePath: \wsl_author\crawler.py
@@ -228,7 +228,7 @@ while True:
                                 news_sql = sql.format(company_name, tag, title,
                                                       author, date, abstract,
                                                       news_url, company_id)
-                                news_sql = news_sql.replace('"', '')
+                                # news_sql = news_sql.replace('"', '')
                                 cursor.execute(news_sql)
                                 mysql.commit()
                                 print('insert to db success')

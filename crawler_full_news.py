@@ -1,7 +1,7 @@
 '''
 Author: li xuefeng
 Date: 2021-01-28 15:26:03
-LastEditTime: 2021-01-28 18:24:18
+LastEditTime: 2021-01-28 18:53:40
 LastEditors: lixf
 Description:
 FilePath: \wsl_author\crawler_full_news.py
@@ -63,7 +63,7 @@ options.add_argument('--ignore-certificate-errors')
 options.add_argument('--no-sandbox')
 options.add_argument('--disable-dev-shm-usage')
 options.add_experimental_option('mobileEmulation', mobileEmulation)
-# options.add_argument('--headless')
+options.add_argument('--headless')
 # 更换头部
 options.add_argument(
     'user-agent="Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Mobile Safari/537.36"'
@@ -161,20 +161,21 @@ while True:
                     continue
                 try:
                     head = driver.find_element_by_css_selector(
-                        'h1[class="wsj-article-headline"]').text
+                        'h1[class="wsj-article-headline"]').text.replace('"', '')
                 except:
                     head = 'null'
                 try:
                     sub_head = driver.find_element_by_css_selector(
-                        'h2[class="sub-head"]').text
+                        'h2[class="sub-head"]').text.replace('"', '')
                 except:
                     sub_head = 'null'
                 try:
                     body_text = driver.find_element_by_id(
-                        'wsj-article-wrap').text
+                        'wsj-article-wrap').text.replace('(', '').replace(')', '').replace(',', '.').replace('"', '')
                 except:
                     body_text = 'null'
-                source_text = driver.find_element_by_tag_name('body').text
+                source_text = driver.find_element_by_tag_name('body').text.replace(
+                    '(', '').replace(')', '').replace(',', '.').replace('"', '')
                 single_res = '\t'.join(
                     (line[0], line[1], line[2], line[3], line[4], line[5], line[6], head, sub_head, body_text, source_text))
                 if r.sadd('text_news_v1', single_res) == 0:
@@ -183,7 +184,7 @@ while True:
                 try:
                     news_sql = sql.format(
                         line[0], line[1], line[2], line[3], line[4], line[5], line[6], head, sub_head, body_text, source_text)
-                    news_sql = news_sql.replace('"', '').replace('\n',' ')
+                    news_sql = news_sql.replace('\n', ' ')
                     cursor.execute(news_sql)
                     mysql.commit()
                     print('insert to db success')

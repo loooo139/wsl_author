@@ -1,7 +1,8 @@
+# -*- coding=utf-8 -*-
 '''
 @Author: li xuefeng
 @Date: 2020-07-28 22:28:02
-LastEditTime: 2020-10-30 19:23:41
+LastEditTime: 2021-01-28 15:23:49
 LastEditors: lixf
 @Description: 
 FilePath: \wsl_author\push_urls.py
@@ -33,19 +34,19 @@ month_dict = {
 # 将刚刚复制的帖在这
 company_list = []
 companyid_set = set()
-with open('./company_all.txt') as f:
+with open('./news_all_full.txt', encoding='utf8') as f:
     for k, line in enumerate(f):
         if k == 0:
             continue
-        line = line.strip()
-        tmp = line.split('\t')
-        id = tmp[-1]
-        companyid_set.add(id)
-        tmp_key = [i + '\t'+id for i in tmp[:3]]
-        if len(tmp) != 5:
-            print(line)
-            continue
-        company_list += tmp_key
+        # line = line.strip()
+        # tmp = line.split('\t')
+        # id = tmp[-1]
+        # companyid_set.add(id)
+        # tmp_key = [i + '\t'+id for i in tmp[:3]]
+        # if len(tmp) != 5:
+        #     print(line)
+        #     continue
+        # company_list += tmp_key
         # url = []
         # url.append(line[0])
         # date_string = line[1]
@@ -70,6 +71,9 @@ with open('./company_all.txt') as f:
         #     print("wrong date" + date_string)
         #     print(sys.exc_info())
         #     continue
+        line = line.strip()
+        # if len(line.split('\t'))
+        company_list.append(line)
 result = []
 r = redis.StrictRedis(host='tencent.latiaohaochi.cn',
                       port=6379,
@@ -83,9 +87,9 @@ for i, url in enumerate(company_list):
     #     time_null += 1
     #     print(time_null)
     #     continue
-    r.sadd('companys_list_v1', url)
-    print(i, r.scard('companys_list_v1'))
-with open('./company_list_v1', 'w') as v4:
+    r.sadd('full_news_v1', url)
+    print(i, r.scard('full_news_v1'))
+with open('./full_news_v1', 'w') as v4:
     for i in company_list:
         v4.write(i)
         v4.write('\n')

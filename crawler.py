@@ -6,7 +6,7 @@
 @Author: li xuefeng
 @Date: 2020-07-25 01:06:38
 
-LastEditTime: 2020-11-06 21:15:42
+LastEditTime: 2021-01-28 15:08:12
 LastEditors: lixf
 @Description: 
 FilePath: \wsl_author\crawler.py
@@ -61,12 +61,12 @@ def ping(url='tencent.latiaohaochi.cn'):
 
 options = webdriver.ChromeOptions()
 # 设置中文
-# mobileEmulation = {'deviceName': 'Galaxy S5'}
+mobileEmulation = {'deviceName': 'Galaxy S5'}
 options.add_argument('--ignore-certificate-errors')
 # from selenium.webdriver.chrome.options import Options
 options.add_argument('--no-sandbox')
 options.add_argument('--disable-dev-shm-usage')
-# options.add_experimental_option('mobileEmulation', mobileEmulation)
+options.add_experimental_option('mobileEmulation', mobileEmulation)
 options.add_argument('--headless')
 # 更换头部
 options.add_argument(

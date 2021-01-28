@@ -1,7 +1,7 @@
 '''
 Author: li xuefeng
 Date: 2021-01-28 15:26:03
-LastEditTime: 2021-01-28 18:53:40
+LastEditTime: 2021-01-28 19:36:42
 LastEditors: lixf
 Description:
 FilePath: \wsl_author\crawler_full_news.py
@@ -64,7 +64,15 @@ options.add_argument('--no-sandbox')
 options.add_argument('--disable-dev-shm-usage')
 options.add_experimental_option('mobileEmulation', mobileEmulation)
 options.add_argument('--headless')
-# 更换头部
+options.add_argument('blink-settings=imagesEnabled=false')
+options.add_argument('--disable-gpu')
+prefs = {
+    'profile.default_content_settings': {
+        'profile.default_content_setting_values': {
+            'images': 2,  # 不加载图片
+            'javascript': 2
+        }}}
+options.add_experimental_option("prefs", prefs)
 options.add_argument(
     'user-agent="Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Mobile Safari/537.36"'
 )
@@ -128,7 +136,7 @@ while True:
                 # origin_index = '135984'
                 single_url = news_link
                 print('current url is ', single_url, '\n', 'loading')
-                time.sleep(random.random())
+                # time.sleep(random.random())
                 driver.get(single_url)
                 if first_crawler:
                     cookies = json.loads(open('cookies').read())
@@ -183,7 +191,7 @@ while True:
                     continue
                 try:
                     news_sql = sql.format(
-                        line[0], line[1], line[2], line[3], line[4], line[5], line[6], head, sub_head, body_text, source_text)
+                        line[0].replace('"', ''), line[1].replace('"', ''), line[2].replace('"', ''), line[3].replace('"', ''), line[4].replace('"', ''), line[5].replace('"', ''), line[6].replace('"', ''), head, sub_head, body_text, source_text)
                     news_sql = news_sql.replace('\n', ' ')
                     cursor.execute(news_sql)
                     mysql.commit()

@@ -1,9 +1,9 @@
 '''
 Author: li xuefeng
 Date: 2021-01-28 17:47:42
-LastEditTime: 2021-01-28 18:13:30
+LastEditTime: 2021-01-28 21:38:09
 LastEditors: lixf
-Description: 
+Description:
 FilePath: \wsl_author\login_wsj.py
 more code more  happy
 '''
@@ -51,7 +51,7 @@ r = redis.StrictRedis(host=redis_url,
                       db=0)
 cookies = json.loads(open('cookies').read())
 driver.get(
-    'http://online.wsj.com/article/SB10001424127887323681904578640263037587022.html')
+    'https://www.wsj.com')
 for cookie in cookies:
     driver.add_cookie(cookie)
 login_botton = driver.find_elements_by_css_selector('a[role="button"]')[1]
@@ -59,8 +59,11 @@ login_botton.click()
 driver.find_element_by_id("username").send_keys('Hong.wu.pitt@gmail.com')
 driver.find_element_by_id("password").send_keys('jay871125')
 driver.find_element_by_css_selector('button[type="submit"]').click()
+open('cookies', 'w').write(json.dumps(driver.get_cookies()))
+driver.get('https://www.wsj.com/articles/huntsman-mulls-repatriating-overseas-cash-for-bolt-on-deals-1533319750')
 head = driver.find_element_by_css_selector(
     'h1[class="wsj-article-headline]"').text
 sub_head = driver.find_element_by_css_selector('h2[class="sub-head]"').text
 text = driver.find_element_by_id('wsj-article-wrap').text
 source_text = driver.find_element_by_tag_name('body').text
+# jar = requests.cookies.RequestsCookieJar()

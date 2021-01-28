@@ -1,7 +1,7 @@
 '''
 Author: li xuefeng
 Date: 2021-01-28 15:26:03
-LastEditTime: 2021-01-28 19:36:42
+LastEditTime: 2021-01-28 20:52:12
 LastEditors: lixf
 Description:
 FilePath: \wsl_author\crawler_full_news.py
@@ -63,7 +63,7 @@ options.add_argument('--ignore-certificate-errors')
 options.add_argument('--no-sandbox')
 options.add_argument('--disable-dev-shm-usage')
 options.add_experimental_option('mobileEmulation', mobileEmulation)
-options.add_argument('--headless')
+# options.add_argument('--headless')
 options.add_argument('blink-settings=imagesEnabled=false')
 options.add_argument('--disable-gpu')
 prefs = {

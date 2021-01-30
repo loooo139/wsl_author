@@ -1,7 +1,7 @@
 '''
 Author: li xuefeng
 Date: 2021-01-28 15:26:03
-LastEditTime: 2021-01-28 20:52:12
+LastEditTime: 2021-01-29 18:11:14
 LastEditors: lixf
 Description:
 FilePath: \wsl_author\crawler_full_news.py
@@ -22,6 +22,9 @@ import platform
 from datetime import datetime, tzinfo, timedelta
 import random
 import json
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
 
 
 class UTC(tzinfo):
@@ -44,9 +47,9 @@ def ping(url='tencent.latiaohaochi.cn'):
     print('ping ' + url)
     print('current os is ' + platform.platform())
     if 'Linux' in platform.platform():
-        result = os.system(u'ping ' + url + ' -c 3')
+        result = os.system(u'ping ' + url + ' -c 1')
     else:
-        result = os.system(u"ping " + url + ' -n 3')
+        result = os.system(u"ping " + url + ' -n 1')
     # result = os.system(u"ping www.baidu.com -n 3")
     if result == 0:
         print("the network is good")
@@ -66,13 +69,9 @@ options.add_experimental_option('mobileEmulation', mobileEmulation)
 # options.add_argument('--headless')
 options.add_argument('blink-settings=imagesEnabled=false')
 options.add_argument('--disable-gpu')
-prefs = {
-    'profile.default_content_settings': {
-        'profile.default_content_setting_values': {
-            'images': 2,  # 不加载图片
-            'javascript': 2
-        }}}
-options.add_experimental_option("prefs", prefs)
+options.add_experimental_option("prefs", {
+    "profile.managed_default_content_settings.images": 2
+})
 options.add_argument(
     'user-agent="Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Mobile Safari/537.36"'
 )
@@ -96,7 +95,7 @@ r = redis.StrictRedis(host=redis_url,
 # res = open('./dis_res.csv', 'a', encoding='utf8', buffering=1)
 # len_res=0
 full_res = 0
-driver.implicitly_wait(10)
+# driver.implicitly_wait(10)
 # driver.set_page_load_timeout(10)
 mysql = pymysql.connect(host=mysql_url,
                         user='root',
@@ -139,14 +138,24 @@ while True:
                 # time.sleep(random.random())
                 driver.get(single_url)
                 if first_crawler:
+                    # driver.get('https://www.wsj.com')
                     cookies = json.loads(open('cookies').read())
                     for cookie in cookies:
                         driver.add_cookie(cookie)
                     login_botton = driver.find_elements_by_css_selector('a[role="button"]')[
-                        1]
+                        -1]
                     login_botton.click()
                     first_crawler = False
+                    driver.find_element_by_id("username").send_keys(
+                        'Hong.wu.pitt@gmail.com')
+                    driver.find_element_by_id(
+                        "password").send_keys('jay871125')
+                    driver.find_element_by_css_selector(
+                        'button[type="submit"]').click()
+                    print('login in success')
                 print(datetime.now(UTC(8)))
+                # WebDriverWait(driver, 4, 0.5).until(
+                #     EC.presence_of_element_located(locator))
                 # WebDriverWait(driver, 10).until(
                 #     EC.presence_of_element_located(
                 #         (By.XPATH, "//div[@class='headline-container']")))
